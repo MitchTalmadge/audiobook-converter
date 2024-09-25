@@ -14,6 +14,9 @@ concurrency:
   group: "pages"
   cancel-in-progress: false
 
+env:
+  PUBLIC_URL: "https://mitchtalmadge.github.io/audiobook-tool"
+
 jobs:
   build:
     runs-on: ubuntu-latest
