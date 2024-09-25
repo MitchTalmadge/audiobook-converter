@@ -20,10 +20,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - name: Setup npm
+        uses: actions/setup-node@v3
         with:
-          version: 9
+          node-version: "20"
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Restore Cache
@@ -35,9 +35,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-
       - name: Install Dependencies
-        run: pnpm install
+        run: npm install
       - name: Build
-        run: pnpm build
+        run: npm build
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
