@@ -20,14 +20,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          version: 9
       - name: Setup Pages
         uses: actions/configure-pages@v5
-      - name: Restore cache
+      - name: Restore Cache
         uses: actions/cache@v4
         with:
           path: |
@@ -35,8 +34,6 @@ jobs:
           key: ${{ runner.os }}-build-${{ hashFiles('build') }}
           restore-keys: |
             ${{ runner.os }}-build-
-      - name: Install pnpm
-        run: npm install -g pnpm
       - name: Install Dependencies
         run: pnmp ci
       - name: Build
