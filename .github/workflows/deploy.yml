@@ -1,45 +1,57 @@
-name: Deploy to GitHub Pages
+name: Deploy to Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          node-version: '16'
-          cache: "pnpm"
-
+          node-version: '20'
+          cache: 'pnpm'
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Restore cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            build
+          key: ${{ runner.os }}-build-${{ hashFiles('build') }}
+          restore-keys: |
+            ${{ runner.os }}-build-
       - name: Install pnpm
         run: npm install -g pnpm
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Build project
+      - name: Install Dependencies
+        run: pnmp ci
+      - name: Build
         run: pnpm build
-
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./build
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
       - name: Deploy to GitHub Pages
-        if: success()
-        run: |
-          # Ensure the gh-pages branch exists
-          git fetch origin gh-pages:gh-pages
-          git worktree add docs gh-pages
-
-          # Copy the build output to the docs folder
-          rsync -av --delete build/ docs/
-
-          # Commit and push changes to the gh-pages branch
-          cd docs
-          git add --all
-          git commit -m "Deploy to GitHub Pages"
-          git push origin gh-pages
+        id: deployment
+        uses: actions/deploy-pages@v4
