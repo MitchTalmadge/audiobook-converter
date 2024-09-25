@@ -35,7 +35,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-
       - name: Install Dependencies
-        run: pnpm ci
+        run: pnpm install
       - name: Build
         run: pnpm build
       - name: Upload Artifact
